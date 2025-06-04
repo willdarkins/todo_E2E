@@ -1,4 +1,5 @@
 import {test, expect} from '@playwright/test'
+import { faker } from '@faker-js/faker'; // Import faker
 
 test('should be able to register to our applications', async({page}) => {
     await page.goto('https://todo.qacart.com/signup')
