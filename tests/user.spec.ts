@@ -2,11 +2,14 @@ import {test, expect} from '@playwright/test'
 import { faker } from '@faker-js/faker'; // Import faker
 
 test('should be able to register to our applications', async({page}) => {
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
+    const email = `${faker.internet.username()}_${Date.now()}@test.com`;
+    
     await page.goto('https://todo.qacart.com/signup')
-    await page.fill("[data-testid=first-name]", 'Will')
-    await page.fill("[data-testid=last-name]", 'Darkins')
-    await page.fill("[data-testid=email]", 'willdarkins@gmail.com')
-    await page.fill("[data-testid=email]", 'willdarkins@gmail.com')
+    await page.fill("[data-testid=first-name]", firstName)
+    await page.fill("[data-testid=last-name]", lastName)
+    await page.fill("[data-testid=email]", email)
     await page.fill("[data-testid=password]", 'Finley2021!')
     await page.fill("[data-testid=confirm-password]", 'Finley2021!')
 
