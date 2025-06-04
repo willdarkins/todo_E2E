@@ -6,7 +6,7 @@ test('should be able to register to our applications', async({page}) => {
     const lastName = faker.person.lastName();
     const email = `${faker.internet.username()}_${Date.now()}@test.com`;
     
-    await page.goto('https://todo.qacart.com/signup')
+    await page.goto('/signup')
     await page.fill("[data-testid=first-name]", firstName)
     await page.fill("[data-testid=last-name]", lastName)
     await page.fill("[data-testid=email]", email)
