@@ -1,17 +1,20 @@
 import {test, expect} from '@playwright/test'
 import { faker } from '@faker-js/faker'; // Import faker
+import User from '../models/User';
+import UserApi from '../api/userAPI';
 
 const todoText = faker.lorem.sentence({ min: 4, max: 8 });
 
 test("should be able to add a new todo", async({page, request, context}) => {
-    const response = await request.post('/api/v1/users/register', {
-        data: {
-            firstName: faker.person.firstName(),
-            lastName: faker.person.lastName(),
-            email:`${faker.internet.username()}_${Date.now()}@test.com`,
-            password: faker.internet.password({ length: 12, pattern: /[A-Za-z0-9!@#$%^&*()_+-=]/ })
-        }
-    })
+    
+    const user = new User(
+            faker.person.firstName(),
+            faker.person.lastName(),
+            `${faker.internet.username()}_${Date.now()}@test.com`,
+            faker.internet.password({ length: 12, memorable: false, pattern: /[A-Za-z0-9!@#$%^&*()_+-]/ }))
+    
+    const response = await new UserApi().signUp(request, user)
+
     const responseBody = await response.json();
     const access_token = responseBody.access_token;
     const firstName = responseBody.firstName;
@@ -44,14 +47,14 @@ test("should be able to add a new todo", async({page, request, context}) => {
 
 test ('should be able to delete a new task', async({page, request, context}) => {
     await page.goto('/signup')
-    const response = await request.post('/api/v1/users/register', {
-        data: {
-            firstName: faker.person.firstName(),
-            lastName: faker.person.lastName(),
-            email:`${faker.internet.username()}_${Date.now()}@test.com`,
-            password: faker.internet.password({ length: 12, pattern: /[A-Za-z0-9!@#$%^&*()_+-=]/ })
-        }
-    })
+
+        const user = new User(
+            faker.person.firstName(),
+            faker.person.lastName(),
+            `${faker.internet.username()}_${Date.now()}@test.com`,
+            faker.internet.password({ length: 12, memorable: false, pattern: /[A-Za-z0-9!@#$%^&*()_+-]/ }))
+
+    const response = await new UserApi().signUp(request, user)
     const responseBody = await response.json();
     const access_token = responseBody.access_token;
     const firstName = responseBody.firstName;
