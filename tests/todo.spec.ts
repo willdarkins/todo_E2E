@@ -2,6 +2,7 @@ import {test, expect} from '@playwright/test'
 import { faker } from '@faker-js/faker'; // Import faker
 import User from '../models/User';
 import UserApi from '../api/userAPI';
+import TodoApi from '../api/TodoApi';
 
 const todoText = faker.lorem.sentence({ min: 4, max: 8 });
 
@@ -60,6 +61,11 @@ test ('should be able to delete a new task', async({page, request, context}) => 
     const firstName = responseBody.firstName;
     const userID = responseBody.userID;
 
+    
+    await user.setAccessToken(access_token);
+    await user.setUserID(userID);
+    console.log('Access Token before addToDo:', user.getAccessToken());
+
     await context.addCookies([
         {
             name: 'firstName',
@@ -78,18 +84,8 @@ test ('should be able to delete a new task', async({page, request, context}) => 
         }
     ]);
 
-await request.post('/api/v1/tasks', {
-    data: {
-        isCompleted: false,
-        item: 'Eat Breakfast'
-    },
-    headers: {
-        Authorization: `Bearer ${access_token}`
-    }
-})
-    
+    await new TodoApi().addTodo(request, user)
     await page.goto('/todo')
-
     await page.click('[data-testid=delete]');
     const noTodosMessage = page.locator('[data-testid=no-todos]');
     await expect(noTodosMessage).toBeVisible();
