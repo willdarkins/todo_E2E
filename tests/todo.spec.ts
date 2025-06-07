@@ -8,11 +8,8 @@ const todoText = faker.lorem.sentence({ min: 4, max: 8 });
 
 test("should be able to add a new todo", async({page, request, context}) => {
     
-    const user = new User(
-            faker.person.firstName(),
-            faker.person.lastName(),
-            `${faker.internet.username()}_${Date.now()}@test.com`,
-            faker.internet.password({ length: 12, memorable: false, pattern: /[A-Za-z0-9!@#$%^&*()_+-]/ }))
+    const user = new User()
+            
     
     const response = await new UserApi().signUp(request, user)
 
@@ -49,11 +46,7 @@ test("should be able to add a new todo", async({page, request, context}) => {
 test ('should be able to delete a new task', async({page, request, context}) => {
     await page.goto('/signup')
 
-        const user = new User(
-            faker.person.firstName(),
-            faker.person.lastName(),
-            `${faker.internet.username()}_${Date.now()}@test.com`,
-            faker.internet.password({ length: 12, memorable: false, pattern: /[A-Za-z0-9!@#$%^&*()_+-]/ }))
+    const user = new User()
 
     const response = await new UserApi().signUp(request, user)
     const responseBody = await response.json();
@@ -64,7 +57,6 @@ test ('should be able to delete a new task', async({page, request, context}) => 
     
     await user.setAccessToken(access_token);
     await user.setUserID(userID);
-    console.log('Access Token before addToDo:', user.getAccessToken());
 
     await context.addCookies([
         {
