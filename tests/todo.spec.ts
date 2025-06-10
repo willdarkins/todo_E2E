@@ -1,84 +1,36 @@
-import {test, expect} from '@playwright/test'
-import { faker } from '@faker-js/faker'; // Import faker
-import User from '../models/User';
-import UserApi from '../api/userAPI';
-import TodoApi from '../api/TodoApi';
+// todo.spec.ts
+import { test, expect } from "../fixtures/base"; // Import from your base fixtures file
+import { faker } from "@faker-js/faker";
+import TodoApi from "../api/TodoApi"; // Adjust path as necessary
 
-const todoText = faker.lorem.sentence({ min: 4, max: 8 });
+test.describe("Todo Application Tests", () => {
+  const todoText = faker.lorem.sentence({ min: 4, max: 8 });
 
-test("should be able to add a new todo", async({page, request, context}) => {
-    
-    const user = new User()
-            
-    
-    const response = await new UserApi().signUp(request, user)
+  test("should be able to add a new todo", async ({ loggedInUser }) => {
+    const { page } = loggedInUser;
 
-    const responseBody = await response.json();
-    const access_token = responseBody.access_token;
-    const firstName = responseBody.firstName;
-    const userID = responseBody.userID;
+    await page.click("[data-testid=add]");
+    await page.fill("[data-testid=new-todo]", todoText);
+    await page.click("[data-testid=submit-newTask]");
+    const toDoItem = page.locator("[data-testid=todo-item]");
+    await expect(toDoItem).toHaveText(todoText);
+  });
 
-    await context.addCookies([
-        {
-            name: 'firstName',
-            value: firstName,
-            url: 'https://todo.qacart.com'
-        },
-                {
-            name: 'access_token',
-            value: access_token,
-            url: 'https://todo.qacart.com'
-        },
-        {
-            name: 'userID',
-            value: userID,
-            url: 'https://todo.qacart.com' 
-        }
-    ]);
-    await page.goto('/todo');
-    await page.click('[data-testid=add]');
-    await page.fill('[data-testid=new-todo]', todoText)
-    await page.click('[data-testid=submit-newTask]');
-    const toDoItem = page.locator('[data-testid=todo-item]');
-    await expect(toDoItem).toHaveText(todoText)
-})
+  test("should be able to delete a new task", async ({
+    loggedInUser,
+    request,
+  }) => {
+    const { user, page } = loggedInUser;
 
-test ('should be able to delete a new task', async({page, request, context}) => {
-    await page.goto('/signup')
+    // Add a todo using the API before deleting it via UI
+    const todoApi = new TodoApi();
+    await todoApi.addTodo(request, user, todoText); // Ensure addTodo takes user and todoText
 
-    const user = new User()
+    // Refresh the page to see the newly added todo
+    await page.reload();
 
-    const response = await new UserApi().signUp(request, user)
-    const responseBody = await response.json();
-    const access_token = responseBody.access_token;
-    const firstName = responseBody.firstName;
-    const userID = responseBody.userID;
-
-    
-    await user.setAccessToken(access_token);
-    await user.setUserID(userID);
-
-    await context.addCookies([
-        {
-            name: 'firstName',
-            value: firstName,
-            url: 'https://todo.qacart.com'
-        },
-                {
-            name: 'access_token',
-            value: access_token,
-            url: 'https://todo.qacart.com'
-        },
-        {
-            name: 'userID',
-            value: userID,
-            url: 'https://todo.qacart.com' 
-        }
-    ]);
-
-    await new TodoApi().addTodo(request, user)
-    await page.goto('/todo')
-    await page.click('[data-testid=delete]');
-    const noTodosMessage = page.locator('[data-testid=no-todos]');
+    await page.click("[data-testid=delete]");
+    const noTodosMessage = page.locator("[data-testid=no-todos]");
     await expect(noTodosMessage).toBeVisible();
-})
+  });
+});
