@@ -8,7 +8,7 @@ test.describe("Login Page", () => {
     await loginPage.goto();
   });
 
-  test("should display the login page with correct components", async ({
+  test("should display login page with correct components", async ({
     loginPage,
   }) => {
     await expect(loginPage.title).toBeVisible();
@@ -21,27 +21,37 @@ test.describe("Login Page", () => {
 
   test("should login with valid credentials", async ({ loginPage, page }) => {
     await loginPage.login(
-      users.validCredentialsUser.email,
-      users.validCredentialsUser.password
+      users.validCredentials.email,
+      users.validCredentials.password
     );
     await expect(page).toHaveURL(/todo/);
   });
 
-  test("should show error for invalid email", async ({ loginPage }) => {
+  test("should throw error for invalid email", async ({ loginPage }) => {
     await loginPage.login(
-      users.invalidEmailUser.email,
-      users.invalidEmailUser.password
+      users.invalidEmail.email,
+      users.invalidEmail.password
     );
     await expect(loginPage.incorrectEmailError).toBeVisible();
   });
 
-  test("should show error for valid email, wrong but valid password", async ({
+  test("should throw error for valid email, wrong but valid password", async ({
     loginPage,
   }) => {
     await loginPage.login(
-      users.validEmailIncorrectPasswordUser.email,
-      users.validEmailIncorrectPasswordUser.password
+      users.validEmailIncorrectPassword.email,
+      users.validEmailIncorrectPassword.password
     );
     await expect(loginPage.incorrectCombo).toBeVisible();
+  });
+
+  test("should throw error for valid email, invalid password", async ({
+    loginPage,
+  }) => {
+    await loginPage.login(
+      users.validEmailInvalidPassword.email,
+      users.validEmailInvalidPassword.password
+    );
+    await expect(loginPage.incorrectPasswordError).toBeVisible();
   });
 });

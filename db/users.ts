@@ -1,13 +1,17 @@
 const users = {
-  validCredentialsUser: {
+  validCredentials: {
     email: "willdarkins@gmail.com",
     password: "Finley2021!",
   },
-  validEmailIncorrectPasswordUser: {
+  validEmailIncorrectPassword: {
     email: "willdarkins@gmail.com",
     password: "Finley2021",
   },
-  invalidEmailUser: {
+  validEmailInvalidPassword: {
+    email: "willdarkins@gmail.com",
+    password: "test",
+  },
+  invalidEmail: {
     email: "notanemail",
     password: "Finley2021!",
   },
@@ -15,7 +19,7 @@ const users = {
     email: "will.darkins@audcay.com",
     password: "Finley2021!",
   },
-  invalidCredentialsUser: {
+  invalidCredentials: {
     email: "admin@example.com",
     password: "adminPassword",
   },

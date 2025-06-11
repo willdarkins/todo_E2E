@@ -29,9 +29,9 @@ export default class LoginPage {
       .getByText(
         "The email and password combination is not correct, please fill a correct email and password"
       );
-    this.incorrectPasswordError = page.getByRole("alert", {
-      name: "Please Fill a correct Password",
-    });
+    this.incorrectPasswordError = page
+      .getByTestId("error-alert")
+      .getByText("Please Fill a correct Password");
   }
 
   async goto() {
