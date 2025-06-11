@@ -1,6 +1,7 @@
 // base.ts
 import { test as base, Page } from "@playwright/test";
 import SignUpPage from "../pages/signUpPage";
+import LoginPage from "../pages/loginPage";
 import ToDoPage from "../pages/todoPage";
 import User from "../models/User"; // Assuming User.ts is in the same directory or adjust path
 import UserApi from "../api/UserApi"; // Adjust path as necessary
@@ -10,6 +11,7 @@ const BASE_URL = "https://todo.qacart.com";
 
 type MyFixtures = {
   signUpPage: SignUpPage;
+  loginPage: LoginPage;
   todoPage: ToDoPage;
   user: User; // Add the User instance to your fixtures
   loggedInUser: {
@@ -22,6 +24,10 @@ type MyFixtures = {
 export const test = base.extend<MyFixtures>({
   signUpPage: async ({ page }, use) => {
     await use(new SignUpPage(page));
+  },
+
+  loginPage: async ({ page }, use) => {
+    await use(new LoginPage(page));
   },
 
   todoPage: async ({ page }, use) => {

@@ -1,16 +1,16 @@
 const users = {
-  valid: {
+  validCredentialsUser: {
     email: "willdarkins@gmail.com",
     password: "Finley2021!",
   },
-  validEmail: {
+  validEmailIncorrectPasswordUser: {
     email: "willdarkins@gmail.com",
     password: "passwordB",
   },
-  invalid: {
+  invalidCredentialsUser: {
     email: "admin@example.com",
     password: "adminPassword",
   },
 };
 
-module.exports = users;
+export default users;
