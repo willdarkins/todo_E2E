@@ -1,4 +1,5 @@
 import { expect, test } from "../fixtures/base";
+import users from "../db/users";
 
 test.describe("Login Page", () => {
   test.beforeEach(async ({ loginPage, context }) => {
@@ -16,5 +17,31 @@ test.describe("Login Page", () => {
     await expect(loginPage.passwordInput).toBeVisible();
     await expect(loginPage.loginButton).toBeVisible();
     await expect(loginPage.signUpLink).toBeVisible();
+  });
+
+  test("should login with valid credentials", async ({ loginPage, page }) => {
+    await loginPage.login(
+      users.validCredentialsUser.email,
+      users.validCredentialsUser.password
+    );
+    await expect(page).toHaveURL(/todo/);
+  });
+
+  test("should show error for invalid email", async ({ loginPage }) => {
+    await loginPage.login(
+      users.invalidEmailUser.email,
+      users.invalidEmailUser.password
+    );
+    await expect(loginPage.incorrectEmailError).toBeVisible();
+  });
+
+  test("should show error for valid email, wrong but valid password", async ({
+    loginPage,
+  }) => {
+    await loginPage.login(
+      users.validEmailIncorrectPasswordUser.email,
+      users.validEmailIncorrectPasswordUser.password
+    );
+    await expect(loginPage.incorrectCombo).toBeVisible();
   });
 });
