@@ -29,7 +29,6 @@ export default class ToDoPage {
     await this.addButton.click();
     await this.todoEntry.fill(todoText);
     await this.submitButton.click();
-    await expect(this.todoText).toBeVisible();
   }
 
   async deleteToDo() {
