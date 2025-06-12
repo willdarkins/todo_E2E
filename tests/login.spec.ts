@@ -1,5 +1,5 @@
 import { expect, test } from "../fixtures/base";
-import users from "../db/users";
+import loginUsers from "../db/loginUsers";
 
 test.describe("Login Page", () => {
   test.beforeEach(async ({ loginPage, context }) => {
@@ -21,16 +21,16 @@ test.describe("Login Page", () => {
 
   test("should login with valid credentials", async ({ loginPage, page }) => {
     await loginPage.login(
-      users.validCredentials.email,
-      users.validCredentials.password
+      loginUsers.validCredentials.email,
+      loginUsers.validCredentials.password
     );
     await expect(page).toHaveURL(/todo/);
   });
 
   test("should throw error for invalid email", async ({ loginPage }) => {
     await loginPage.login(
-      users.invalidEmail.email,
-      users.invalidEmail.password
+      loginUsers.invalidEmail.email,
+      loginUsers.invalidEmail.password
     );
     await expect(loginPage.incorrectEmailError).toBeVisible();
   });
@@ -39,8 +39,8 @@ test.describe("Login Page", () => {
     loginPage,
   }) => {
     await loginPage.login(
-      users.validEmailIncorrectPassword.email,
-      users.validEmailIncorrectPassword.password
+      loginUsers.validEmailIncorrectPassword.email,
+      loginUsers.validEmailIncorrectPassword.password
     );
     await expect(loginPage.incorrectCombo).toBeVisible();
   });
@@ -49,9 +49,19 @@ test.describe("Login Page", () => {
     loginPage,
   }) => {
     await loginPage.login(
-      users.validEmailInvalidPassword.email,
-      users.validEmailInvalidPassword.password
+      loginUsers.validEmailInvalidPassword.email,
+      loginUsers.validEmailInvalidPassword.password
     );
     await expect(loginPage.incorrectPasswordError).toBeVisible();
+  });
+
+  test("should throw error for invalid email, valid password", async ({
+    loginPage,
+  }) => {
+    await loginPage.login(
+      loginUsers.invalidEmail.email,
+      loginUsers.invalidEmail.password
+    );
+    await expect(loginPage.incorrectEmailError).toBeVisible();
   });
 });

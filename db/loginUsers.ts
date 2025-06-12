@@ -1,4 +1,4 @@
-const users = {
+const loginUsers = {
   validCredentials: {
     email: "willdarkins@gmail.com",
     password: "Finley2021!",
@@ -25,4 +25,4 @@ const users = {
   },
 };
 
-export default users;
+export default loginUsers;
