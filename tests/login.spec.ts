@@ -1,7 +1,7 @@
 import { expect, test } from "../fixtures/base";
 import loginUsers from "../db/loginUsers";
 
-test.describe("Login Page", () => {
+test.describe("Login Tests", () => {
   test.beforeEach(async ({ loginPage, context }) => {
     await context.clearCookies(); // Clear session cookies
     await context.storageState();

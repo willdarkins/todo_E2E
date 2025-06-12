@@ -12,6 +12,12 @@ export default class SignUpPage {
   readonly haveAccountLink: Locator;
   readonly welcomeMessage: Locator;
 
+  readonly missingFirstName: Locator;
+  readonly missingLastName: Locator;
+  readonly missingEmail: Locator;
+  readonly missingPassword: Locator;
+  readonly missingConfirmPassword: Locator;
+
   constructor(page: Page) {
     this.page = page;
     (this.firstNameInput = page.getByTestId("first-name")),
@@ -22,6 +28,20 @@ export default class SignUpPage {
     this.signUpButton = page.getByRole("button", { name: "SIGNUP" });
     this.haveAccountLink = page.getByTestId("go-login");
     this.welcomeMessage = page.getByTestId("welcome");
+
+    this.missingFirstName = page.getByText(
+      "First Name is required, and it should be more than 3 characters"
+    );
+    this.missingLastName = page.getByText(
+      "Last Name is required, and it should be more than 3 characters"
+    );
+    this.missingEmail = page.getByText("Please Insert a correct Email format");
+    this.missingPassword = page.getByText(
+      "Password must be Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character"
+    );
+    this.missingConfirmPassword = page.getByText(
+      "Second password does not match the first Password"
+    );
   }
 
   async goto() {
