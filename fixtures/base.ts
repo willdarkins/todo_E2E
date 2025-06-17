@@ -5,6 +5,7 @@ import LoginPage from "../pages/loginPage";
 import ToDoPage from "../pages/todoPage";
 import User from "../models/User"; // Assuming User.ts is in the same directory or adjust path
 import UserApi from "../api/UserApi"; // Adjust path as necessary
+import NavigationPage from "../pages/navigationPage";
 
 // Define your base URL if it's consistent and not already in playwright.config.ts
 const BASE_URL = "https://todo.qacart.com";
@@ -13,7 +14,8 @@ type MyFixtures = {
   signUpPage: SignUpPage;
   loginPage: LoginPage;
   todoPage: ToDoPage;
-  user: User; // Add the User instance to your fixtures
+  user: User;
+  navigationPage: NavigationPage;
   loggedInUser: {
     // Add the loggedInUser fixture
     user: User;
@@ -32,6 +34,10 @@ export const test = base.extend<MyFixtures>({
 
   todoPage: async ({ page }, use) => {
     await use(new ToDoPage(page));
+  },
+
+  navigationPage: async ({ page }, use) => {
+    await use(new NavigationPage(page));
   },
 
   // 'user' fixture: Creates a new User instance for each test that uses it

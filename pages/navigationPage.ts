@@ -1,23 +1,27 @@
 import { Locator, Page } from "@playwright/test";
+import LoginPage from "./loginPage";
 
-export default class NavigationPage {
-  readonly page: Page;
+export default class NavigationPage extends LoginPage {
   readonly homeLink: Locator;
   readonly loginLink: Locator;
   readonly signUpLink: Locator;
+  readonly todoLink: Locator;
 
   constructor(page: Page) {
-    this.page = page;
+    super(page);
     this.homeLink = page.locator('a[href="/"]');
     this.loginLink = page.locator('a[href="/login"]');
     this.signUpLink = page.locator('a[href="/signup"]');
+    this.todoLink = page.locator('a[href="/todo"]');
   }
   /**
    * Clicks a specified navigation link based on its name.
    * @param linkName The name of the link to click (e.g., "Home", "Login", "Signup").
    * @throws Error if an invalid linkName is provided.
    */
-  async clickNav(linkName: "Home" | "Login" | "Signup"): Promise<void> {
+  async clickNav(
+    linkName: "Home" | "Login" | "Signup" | "Todo"
+  ): Promise<void> {
     switch (linkName) {
       case "Home":
         await this.homeLink.click();
@@ -28,9 +32,10 @@ export default class NavigationPage {
       case "Signup":
         await this.signUpLink.click();
         break;
+      case "Todo":
+        await this.todoLink.click();
+        break;
       default:
-        // This 'default' case should ideally not be reached if using the union type for linkName
-        // but it's good practice for robustness or if the type is less strict elsewhere.
         throw new Error(`Invalid navigation link name provided: ${linkName}`);
     }
   }
