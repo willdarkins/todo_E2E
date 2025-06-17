@@ -1,18 +1,15 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from "@playwright/test";
+import dotenv from "dotenv";
+import path from "path";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+// Read from ".env" file.
+dotenv.config({ path: path.resolve(__dirname, ".env") });
 
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
+// Alternatively, read from "../my.env" file.
+dotenv.config({ path: path.resolve(__dirname, "..", ".env") });
+
 export default defineConfig({
-  testDir: './tests',
+  testDir: "./tests",
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -22,20 +19,20 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: "html",
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    baseURL: 'https://todo.qacart.com',
+    baseURL: "https://todo.qacart.com",
     headless: false,
-    trace: 'on-first-retry',
+    trace: "on-first-retry",
   },
 
   /* Configure projects for major browsers */
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
-    }
+      name: "chromium",
+      use: { ...devices["Desktop Chrome"] },
+    },
     /* Test against mobile viewports. */
     // {
     //   name: 'Mobile Chrome',

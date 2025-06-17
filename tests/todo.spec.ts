@@ -1,92 +1,107 @@
-import {test, expect} from '@playwright/test'
-import { faker } from '@faker-js/faker'; // Import faker
-import User from '../models/User';
-import UserApi from '../api/userAPI';
-import TodoApi from '../api/TodoApi';
+import { test, expect } from "../fixtures/base"; // Import from your base fixtures file
+import TodoApi from "../api/TodoApi"; // Adjust path as necessary
+import { faker } from "@faker-js/faker";
 
-const todoText = faker.lorem.sentence({ min: 4, max: 8 });
+test.describe("Todo Application Tests", () => {
+  const todoText = faker.lorem.sentence({ min: 4, max: 8 });
 
-test("should be able to add a new todo", async({page, request, context}) => {
-    
-    const user = new User(
-            faker.person.firstName(),
-            faker.person.lastName(),
-            `${faker.internet.username()}_${Date.now()}@test.com`,
-            faker.internet.password({ length: 12, memorable: false, pattern: /[A-Za-z0-9!@#$%^&*()_+-]/ }))
-    
-    const response = await new UserApi().signUp(request, user)
+  test.beforeEach(async ({ loggedInUser }) => {
+    const { page } = loggedInUser;
+  });
 
-    const responseBody = await response.json();
-    const access_token = responseBody.access_token;
-    const firstName = responseBody.firstName;
-    const userID = responseBody.userID;
+  test("should add a new task", async ({ todoPage }) => {
+    await todoPage.addTodo(todoText);
+    await expect(todoPage.todoText).toBeVisible();
+  });
 
-    await context.addCookies([
-        {
-            name: 'firstName',
-            value: firstName,
-            url: 'https://todo.qacart.com'
-        },
-                {
-            name: 'access_token',
-            value: access_token,
-            url: 'https://todo.qacart.com'
-        },
-        {
-            name: 'userID',
-            value: userID,
-            url: 'https://todo.qacart.com' 
-        }
-    ]);
-    await page.goto('/todo');
-    await page.click('[data-testid=add]');
-    await page.fill('[data-testid=new-todo]', todoText)
-    await page.click('[data-testid=submit-newTask]');
-    const toDoItem = page.locator('[data-testid=todo-item]');
-    await expect(toDoItem).toHaveText(todoText)
-})
+  test("should add multiple tasks", async ({ todoPage, page }) => {
+    const expectedTodos: string[] = [];
+    const todoItemSelector = '[data-testid="todo-text"]';
 
-test ('should be able to delete a new task', async({page, request, context}) => {
-    await page.goto('/signup')
+    for (let i = 0; i < 5; i++) {
+      const multipleTodos = `Task ${i + 1}`;
+      await todoPage.addTodo(multipleTodos);
+      await page
+        .locator(todoItemSelector, { hasText: multipleTodos })
+        .waitFor();
+      expectedTodos.push(multipleTodos);
+    }
 
-        const user = new User(
-            faker.person.firstName(),
-            faker.person.lastName(),
-            `${faker.internet.username()}_${Date.now()}@test.com`,
-            faker.internet.password({ length: 12, memorable: false, pattern: /[A-Za-z0-9!@#$%^&*()_+-]/ }))
+    const todoItems = await page.getByTestId("todo-text").allTextContents();
+    for (const expectedTodoText of expectedTodos) {
+      const found = todoItems.some(
+        (itemText) => itemText.trim() === expectedTodoText.trim()
+      );
+      expect(
+        found,
+        `Expected "${expectedTodoText}" to be in the todo list`
+      ).toBe(true);
+    }
+    expect(todoItems.length).toBe(expectedTodos.length);
+  });
 
-    const response = await new UserApi().signUp(request, user)
-    const responseBody = await response.json();
-    const access_token = responseBody.access_token;
-    const firstName = responseBody.firstName;
-    const userID = responseBody.userID;
+  test("should mark task as completed", async ({
+    loggedInUser,
+    request,
+    todoPage,
+  }) => {
+    const { user, page } = loggedInUser;
+    const todoApi = new TodoApi();
+    await todoApi.addTodo(request, user);
 
-    
-    await user.setAccessToken(access_token);
-    await user.setUserID(userID);
-    console.log('Access Token before addToDo:', user.getAccessToken());
+    await page.reload();
 
-    await context.addCookies([
-        {
-            name: 'firstName',
-            value: firstName,
-            url: 'https://todo.qacart.com'
-        },
-                {
-            name: 'access_token',
-            value: access_token,
-            url: 'https://todo.qacart.com'
-        },
-        {
-            name: 'userID',
-            value: userID,
-            url: 'https://todo.qacart.com' 
-        }
-    ]);
+    await todoPage.completeToDo();
+    const checkboxInput = page.locator('input[type="checkbox"]').first();
+    await expect(checkboxInput).toBeChecked();
+  });
 
-    await new TodoApi().addTodo(request, user)
-    await page.goto('/todo')
-    await page.click('[data-testid=delete]');
-    const noTodosMessage = page.locator('[data-testid=no-todos]');
+  test("should mark multipe tasks completed", async ({
+    loggedInUser,
+    request,
+    todoPage,
+  }) => {
+    const { user, page } = loggedInUser;
+    const todoApi = new TodoApi();
+    await todoApi.addMultipleTodos(request, user, 5);
+
+    await page.reload();
+
+    await todoPage.completeToDo();
+    const checkboxInput = page.locator('input[type="checkbox"]').first();
+    await expect(checkboxInput).toBeChecked();
+  });
+
+  test("should delete a new task", async ({
+    loggedInUser,
+    request,
+    todoPage,
+  }) => {
+    const { user, page } = loggedInUser;
+    const todoApi = new TodoApi();
+    await todoApi.addTodo(request, user);
+
+    await page.reload();
+
+    await todoPage.deleteToDo();
+    const noTodosMessage = page.locator("[data-testid=no-todos]");
     await expect(noTodosMessage).toBeVisible();
-})
+  });
+
+  test("should delete multiple tasks", async ({
+    loggedInUser,
+    request,
+    todoPage,
+  }) => {
+    const { user, page } = loggedInUser;
+    const todoApi = new TodoApi();
+    await todoApi.addMultipleTodos(request, user, 5);
+
+    await page.reload();
+
+    await todoPage.clickAllTodos();
+    await todoPage.deleteToDo();
+    const noTodosMessage = page.locator("[data-testid=no-todos]");
+    await expect(noTodosMessage).toBeVisible();
+  });
+});
