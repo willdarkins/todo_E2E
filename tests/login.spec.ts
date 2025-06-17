@@ -64,4 +64,13 @@ test.describe("Login Tests", () => {
     );
     await expect(loginPage.incorrectEmailError).toBeVisible();
   });
+
+  test("should logout successfully", async ({ loginPage, page }) => {
+    await loginPage.login(
+      loginUsers.validCredentials.email,
+      loginUsers.validCredentials.password
+    );
+    await loginPage.logout();
+    await expect(page).toHaveURL(/login/);
+  });
 });

@@ -1,4 +1,3 @@
-// todo.spec.ts
 import { test, expect } from "../fixtures/base"; // Import from your base fixtures file
 import TodoApi from "../api/TodoApi"; // Adjust path as necessary
 import { faker } from "@faker-js/faker";
@@ -41,7 +40,7 @@ test.describe("Todo Application Tests", () => {
     expect(todoItems.length).toBe(expectedTodos.length);
   });
 
-  test("should be able to delete a new task", async ({
+  test("should mark task as completed", async ({
     loggedInUser,
     request,
     todoPage,
@@ -52,6 +51,55 @@ test.describe("Todo Application Tests", () => {
 
     await page.reload();
 
+    await todoPage.completeToDo();
+    const checkboxInput = page.locator('input[type="checkbox"]').first();
+    await expect(checkboxInput).toBeChecked();
+  });
+
+  test("should mark multipe tasks completed", async ({
+    loggedInUser,
+    request,
+    todoPage,
+  }) => {
+    const { user, page } = loggedInUser;
+    const todoApi = new TodoApi();
+    await todoApi.addMultipleTodos(request, user, 5);
+
+    await page.reload();
+
+    await todoPage.completeToDo();
+    const checkboxInput = page.locator('input[type="checkbox"]').first();
+    await expect(checkboxInput).toBeChecked();
+  });
+
+  test("should delete a new task", async ({
+    loggedInUser,
+    request,
+    todoPage,
+  }) => {
+    const { user, page } = loggedInUser;
+    const todoApi = new TodoApi();
+    await todoApi.addTodo(request, user);
+
+    await page.reload();
+
+    await todoPage.deleteToDo();
+    const noTodosMessage = page.locator("[data-testid=no-todos]");
+    await expect(noTodosMessage).toBeVisible();
+  });
+
+  test("should delete multiple tasks", async ({
+    loggedInUser,
+    request,
+    todoPage,
+  }) => {
+    const { user, page } = loggedInUser;
+    const todoApi = new TodoApi();
+    await todoApi.addMultipleTodos(request, user, 5);
+
+    await page.reload();
+
+    await todoPage.clickAllTodos();
     await todoPage.deleteToDo();
     const noTodosMessage = page.locator("[data-testid=no-todos]");
     await expect(noTodosMessage).toBeVisible();

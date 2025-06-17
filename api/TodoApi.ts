@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker";
 
 export default class TodoApi {
   /**
-   * Adds a single todo item.
+   * Adds a single todo item
    * @param request The Playwright APIRequestContext.
    * @param user The User object with access token.
    * @returns The API response for the added todo.
@@ -21,10 +21,16 @@ export default class TodoApi {
     });
   }
 
+  /**
+   * Adds multiple todo items
+   * @param request The Playwright APIRequestContext.
+   * @param user The User object with access token.
+   * @returns The API response for the added todo.
+   */
   async addMultipleTodos(
     request: APIRequestContext,
     user: User,
-    count: number = 5
+    count: number
   ): Promise<{
     responses: import("@playwright/test").APIResponse[];
     todoTexts: string[];

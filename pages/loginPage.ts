@@ -8,6 +8,7 @@ export default class LoginPage {
   readonly emailInput: Locator;
   readonly passwordInput: Locator;
   readonly loginButton: Locator;
+  readonly logoutButton: Locator;
   readonly signUpLink: Locator;
   readonly incorrectEmailError: Locator;
   readonly incorrectCombo: Locator;
@@ -22,6 +23,7 @@ export default class LoginPage {
     this.emailInput = page.getByTestId("email");
     this.passwordInput = page.getByTestId("password");
     this.loginButton = page.getByRole("button", { name: "LOGIN" });
+    this.logoutButton = page.getByRole("button", { name: "LOGOUT" });
     this.signUpLink = page.getByTestId("signup");
     this.incorrectEmailError = page.locator("#email-helper-text");
     this.incorrectCombo = page
@@ -42,5 +44,9 @@ export default class LoginPage {
     await this.emailInput.fill(userName);
     await this.passwordInput.fill(password);
     await this.loginButton.click();
+  }
+
+  async logout() {
+    await this.logoutButton.click();
   }
 }
